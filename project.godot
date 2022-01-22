@@ -1,0 +1,50 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "EditorPlugin",
+"class": "GodotSfxr",
+"language": "GDScript",
+"path": "res://addons/godot_sfxr/GodotSfxr.gd"
+}, {
+"base": "Object",
+"class": "SfxrGenerator",
+"language": "GDScript",
+"path": "res://addons/godot_sfxr/SfxrGenerator.gd"
+}, {
+"base": "Object",
+"class": "SfxrGlobals",
+"language": "GDScript",
+"path": "res://addons/godot_sfxr/SfxrGlobals.gd"
+}, {
+"base": "AudioStreamPlayer",
+"class": "SfxrStreamPlayer",
+"language": "GDScript",
+"path": "res://addons/godot_sfxr/SfxrStreamPlayer.gd"
+} ]
+_global_script_class_icons={
+"GodotSfxr": "",
+"SfxrGenerator": "",
+"SfxrGlobals": "",
+"SfxrStreamPlayer": ""
+}
+
+[application]
+
+config/name="GodotSfxr"
+config/icon="res://images/icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/godot_sfxr/plugin.cfg" )
+
+[physics]
+
+common/enable_pause_aware_picking=true
