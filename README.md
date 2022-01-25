@@ -2,7 +2,7 @@
 
 Godot plugin that adds the SfxrStreamPlayer node to generate sound effects inside the editor.
 
-![SfxrStreamPlayer Node](images/inspector.png)
+![SfxrStreamPlayer Node](images/icon_big.png)
 
 Ported from [jsfxr](https://sfxr.me/) (by Eric Fredricksen), which is a port from the original [sfxr](https://www.drpetter.se/project_sfxr.html) (by DrPetter).
 
