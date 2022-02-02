@@ -461,6 +461,12 @@ func _random_preset():
 ##################################
 
 
+func duplicate(flags: int = DUPLICATE_USE_INSTANCING | DUPLICATE_SCRIPTS):
+    var to_return = .duplicate(flags)
+    to_return.sfx_buffer = self.sfx_buffer
+    return to_return
+    
+
 func _clear_buffer():
     sfx_buffer = PoolVector2Array([])
 
