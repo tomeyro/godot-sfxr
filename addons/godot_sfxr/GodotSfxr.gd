@@ -1,6 +1,5 @@
 tool
 extends EditorPlugin
-class_name GodotSfxr
 
 
 func _enter_tree() -> void:

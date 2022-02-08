@@ -9,12 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "EditorPlugin",
-"class": "GodotSfxr",
-"language": "GDScript",
-"path": "res://addons/godot_sfxr/GodotSfxr.gd"
-}, {
-"base": "Object",
+"base": "Reference",
 "class": "SfxrGenerator",
 "language": "GDScript",
 "path": "res://addons/godot_sfxr/SfxrGenerator.gd"
@@ -23,17 +18,10 @@ _global_script_classes=[ {
 "class": "SfxrGlobals",
 "language": "GDScript",
 "path": "res://addons/godot_sfxr/SfxrGlobals.gd"
-}, {
-"base": "AudioStreamPlayer",
-"class": "SfxrStreamPlayer",
-"language": "GDScript",
-"path": "res://addons/godot_sfxr/SfxrStreamPlayer.gd"
 } ]
 _global_script_class_icons={
-"GodotSfxr": "",
 "SfxrGenerator": "",
-"SfxrGlobals": "",
-"SfxrStreamPlayer": ""
+"SfxrGlobals": ""
 }
 
 [application]

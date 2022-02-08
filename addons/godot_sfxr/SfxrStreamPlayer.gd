@@ -1,6 +1,5 @@
 tool
 extends AudioStreamPlayer
-class_name SfxrStreamPlayer
 
 
 # Wave Shape
@@ -50,8 +49,8 @@ var p_hpf_ramp: float
 var sound_vol: float
 var sample_rate: float
 
-# Sfx buffer
-var sfx_buffer: PoolVector2Array
+# Sfx Generation
+var sfx_timer: SceneTreeTimer
 
 
 ##################################
@@ -61,7 +60,7 @@ var sfx_buffer: PoolVector2Array
 
 const PROPERTY_MAP = {
     # Sample params
-    "sample_params/sound_vol": {"name": "sound_vol", "hint_string": "0,1,0.000000001", "default": 0.50},
+    "sample_params/sound_vol": {"name": "sound_vol", "hint_string": "0,1,0.000000001", "default": 0.25},
     "sample_params/sample_rate": {"name": "sample_rate", "hint_string": "6000,44100,1", "default": 44100.0},
     # Envelope
     "envelope/attack_time": {"name": "p_env_attack", "hint_string": "0,1,0.000000001", "default": 0.0},
@@ -98,7 +97,20 @@ const PROPERTY_MAP = {
 
 
 func _get_property_list() -> Array:
+    var presets = SfxrGlobals.PRESETS.keys()
+    presets.pop_front()
     var props = []
+    props.append({
+        "name": "SfxrStreamPlayer",
+        "type": TYPE_NIL,
+        "usage": PROPERTY_USAGE_CATEGORY | PROPERTY_USAGE_SCRIPT_VARIABLE,
+    })
+    for preset in presets:
+        props.append({
+            "name": "generators/" + str(preset).to_lower(),
+            "type": TYPE_BOOL,
+            "usage": PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_NO_INSTANCE_STATE,
+        })
     props.append({
         "name": "wave/type",
         "type": TYPE_INT,
@@ -112,18 +124,13 @@ func _get_property_list() -> Array:
             "hint": PROPERTY_HINT_RANGE,
             "hint_string": PROPERTY_MAP[property]["hint_string"],
         })
-    var presets = SfxrGlobals.PRESETS.keys()
-    presets.pop_front()
-    props.append({
-        "name": "actions/generator",
-        "type": TYPE_INT,
-        "hint": PROPERTY_HINT_ENUM,
-        "hint_string": "-," + PoolStringArray(presets).join(",").capitalize(),
-    })
-    props.append({
-        "name": "actions/play",
-        "type": TYPE_BOOL,
-    })
+    props.append_array([
+        {
+            "name": "actions/force_rebuild",
+            "type": TYPE_BOOL,
+            "usage": PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_NO_INSTANCE_STATE,
+        },
+     ])
     return props
 
 
@@ -135,24 +142,31 @@ func _get(property: String):
 
 
 func _set(property: String, value) -> bool:
+    var auto_build = Engine.editor_hint and is_inside_tree()
     if property in PROPERTY_MAP:
         self[PROPERTY_MAP[property]["name"]] = value
+        if auto_build:
+            _schedule_build_sfx(true)
         return true
     elif property == "wave/type":
         wave_type = value
+        if auto_build:
+            _schedule_build_sfx(true)
         return true
-    elif property == "actions/generator":
+    elif property == "actions/force_rebuild":
+        if value and auto_build:
+            build_sfx(true)
+        return true
+    elif property == "sfxr_generator":
         if not value:
             value = 0
-        var presets_method = "_presets_" + str(SfxrGlobals.PRESETS.keys()[value]).to_lower()
-        if has_method(presets_method):
-            call(presets_method)
-            property_list_changed_notify()
-            play_sfx(true)
+        if preset_values(value) and auto_build:
+            build_sfx(true)
         return true
-    elif property == "actions/play":
-        if value:
-            play_sfx(true)
+    elif property.begins_with("generators/"):
+        property = property.replace("generators/", "").to_upper()
+        if preset_values(SfxrGlobals.PRESETS.get(property, -1)) and auto_build:
+            build_sfx(true)
         return true
     return false
 
@@ -366,12 +380,6 @@ func _presets_synth():
 
 func _presets_tone():
     _set_defaults()
-    wave_type = SfxrGlobals.WAVE_SHAPES.SINE
-    p_base_freq = 0.35173364 # 440 Hz
-    p_env_attack = 0
-    p_env_sustain = 0.6641 # 1 sec
-    p_env_decay = 0
-    p_env_punch = 0
 
 
 func _presets_click():
@@ -451,9 +459,17 @@ func _presets_mutate():
     if rnd(1): p_arp_mod += frnd(0.1) - 0.05
 
 
-func _random_preset():
-    var preset = SfxrGlobals.PRESETS.keys()[(randi() % (len(SfxrGlobals.PRESETS) - 1)) + 1].to_lower()
-    call("_presets_" + preset)
+func random_preset() -> bool:
+    return preset_values((randi() % (len(SfxrGlobals.PRESETS) - 1)) + 1)
+
+
+func preset_values(preset_key: int) -> bool:
+    if preset_key >= 0 and preset_key < len(SfxrGlobals.PRESETS):
+        var preset_method = "_presets_" + SfxrGlobals.PRESETS.keys()[preset_key].to_lower()
+        if has_method(preset_method):
+            call(preset_method)
+            return true
+    return false
 
 
 ##################################
@@ -461,26 +477,25 @@ func _random_preset():
 ##################################
 
 
-func _clear_buffer():
-    sfx_buffer = PoolVector2Array([])
+func _schedule_build_sfx(play_after_build):
+    sfx_timer = get_tree().create_timer(.5)
+    sfx_timer.connect("timeout", self, "_on_sfx_timer_timeout", [sfx_timer, play_after_build])
 
 
-func _build_buffer():
-    if not sfx_buffer:
-        var gen = SfxrGenerator.new()
-        gen.init(self)
-        sfx_buffer = gen.get_raw_buffer()
-    var duration = len(sfx_buffer) / sample_rate
-    stream = AudioStreamGenerator.new()
-    stream.mix_rate = sample_rate
-    stream.buffer_length = duration
-    var pb: AudioStreamGeneratorPlayback = get_stream_playback()
-    pb.push_buffer(sfx_buffer)
+func _on_sfx_timer_timeout(timer, play_after_build):
+    if timer == sfx_timer:
+        build_sfx(play_after_build)
 
 
-func play_sfx(clear_buffer=false):
-    if clear_buffer:
-        _clear_buffer()
-    _build_buffer()
-    if not playing:
+func build_sfx(play_after_build=false):
+    var sfxg = SfxrGenerator.new()
+    sfxg.build_sample(self)
+    if play_after_build:
         play()
+    property_list_changed_notify()
+
+
+func play(from_position: float = 0.0):
+    if playing:
+        stop()
+    .play(from_position)
