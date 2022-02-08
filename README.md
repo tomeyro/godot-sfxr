@@ -8,9 +8,11 @@ Ported from [jsfxr](https://sfxr.me/) (by Eric Fredricksen), which is a port fro
 
 ## Installation
 
-- Install from the [Godot Asset Library](https://godotengine.org/asset-library/asset/1195).
+- Install from the [Godot Asset Library](https://godotengine.org/asset-library/asset/1195)*.
 
 - Clone or download this repository, and copy the contents of the "addons" directory to the "addons" directory of your Godot Project.
+
+> \* The download from the Godot Asset Library might not be up to date. You can use Github to always get the latest version.
 
 ## Usage
 
