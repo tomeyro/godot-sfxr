@@ -298,7 +298,7 @@ func get_raw_buffer() -> Array:
     return _buffer
 
 
-func build_sample(stream_player: AudioStreamPlayer):
+func build_sample(stream_player):
     init_params(stream_player)
     var sample: AudioStreamSample = stream_player.stream
     if (not sample):

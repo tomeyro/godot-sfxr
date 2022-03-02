@@ -1,5 +1,5 @@
 tool
-extends AudioStreamPlayer
+extends AudioStreamPlayer2D
 
 
 # Wave Shape

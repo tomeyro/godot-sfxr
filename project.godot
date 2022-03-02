@@ -18,10 +18,16 @@ _global_script_classes=[ {
 "class": "SfxrGlobals",
 "language": "GDScript",
 "path": "res://addons/godot_sfxr/SfxrGlobals.gd"
+}, {
+"base": "Object",
+"class": "SfxrStreamPlayerInterface",
+"language": "GDScript",
+"path": "res://addons/godot_sfxr/SfxrStreamPlayerInterface.gd"
 } ]
 _global_script_class_icons={
 "SfxrGenerator": "",
-"SfxrGlobals": ""
+"SfxrGlobals": "",
+"SfxrStreamPlayerInterface": ""
 }
 
 [application]
