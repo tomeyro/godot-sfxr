@@ -1,4 +1,4 @@
-tool
+@tool
 extends AudioStreamPlayer2D
 
 
@@ -62,11 +62,11 @@ func _get_property_list() -> Array:
     return SfxrStreamPlayerInterface.object_get_property_list()
 
 
-func _get(property: String):
+func _get(property):
     return SfxrStreamPlayerInterface.object_get(self, property)
 
 
-func _set(property: String, value) -> bool:
+func _set(property, value) -> bool:
     return SfxrStreamPlayerInterface.object_set(self, property, value)
 
 
@@ -75,7 +75,7 @@ func _set(property: String, value) -> bool:
 ##################################
 
 
-func _init() -> void:
+func _init():
     SfxrStreamPlayerInterface.object_set_defaults(self)
 
 
@@ -116,4 +116,4 @@ func build_sfx(play_after_build: bool = false):
 func play(from_position: float = 0.0):
     if playing:
         stop()
-    .play(from_position)
+    super.play(from_position)

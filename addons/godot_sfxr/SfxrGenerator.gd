@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 class_name SfxrGenerator
 
 
@@ -300,10 +300,10 @@ func get_raw_buffer() -> Array:
 
 func build_sample(stream_player):
     init_params(stream_player)
-    var sample: AudioStreamSample = stream_player.stream
+    var sample: AudioStreamWAV = stream_player.stream
     if (not sample):
-        stream_player.stream = AudioStreamSample.new()
+        stream_player.stream = AudioStreamWAV.new()
         sample = stream_player.stream
     sample.mix_rate = sample_rate
-    sample.data = PoolByteArray(get_raw_buffer())
+    sample.data = PackedByteArray(get_raw_buffer())
     return sample

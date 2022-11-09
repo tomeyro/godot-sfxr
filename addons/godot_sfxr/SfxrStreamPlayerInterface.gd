@@ -64,12 +64,12 @@ static func object_get_property_list() -> Array:
         "name": "wave/type",
         "type": TYPE_INT,
         "hint": PROPERTY_HINT_ENUM,
-        "hint_string": PoolStringArray(SfxrGlobals.WAVE_SHAPES.keys()).join(",").capitalize(),
+        "hint_string": ",".join(PackedStringArray(SfxrGlobals.WAVE_SHAPES.keys())),
     })
     for property in PROPERTY_MAP:
         props.append({
             "name": property,
-            "type": TYPE_REAL,
+            "type": TYPE_FLOAT,
             "hint": PROPERTY_HINT_RANGE,
             "hint_string": PROPERTY_MAP[property]["hint_string"],
         })
@@ -91,7 +91,7 @@ static func object_get(object: Node, property: String):
 
 
 static func object_set(object: Node, property: String, value) -> bool:
-    var auto_build = Engine.editor_hint and object.is_inside_tree()
+    var auto_build = Engine.is_editor_hint() and object.is_inside_tree()
     if property in PROPERTY_MAP:
         object[PROPERTY_MAP[property]["name"]] = value
         if auto_build:
@@ -459,8 +459,9 @@ static func preset_values(object: Node, preset_key: int) -> bool:
 
 
 static func _schedule_build_sfx(object: Node, play_after_build: bool):
-    object.sfx_timer = object.get_tree().create_timer(.5)
-    object.sfx_timer.connect("timeout", object, "_on_sfx_timer_timeout", [object.sfx_timer, play_after_build])
+    var timer: SceneTreeTimer = object.get_tree().create_timer(.5)
+    object.sfx_timer = timer
+    timer.timeout.connect(func(): object._on_sfx_timer_timeout(timer, play_after_build))
 
 
 static func _on_sfx_timer_timeout(object: Node, timer: SceneTreeTimer, play_after_build: bool):
@@ -473,4 +474,4 @@ static func build_sfx(object: Node, play_after_build: bool = false):
     sfxg.build_sample(object)
     if play_after_build:
         object.play()
-    object.property_list_changed_notify()
+    object.notify_property_list_changed()
