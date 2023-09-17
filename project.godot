@@ -8,32 +8,10 @@
 
 config_version=5
 
-_global_script_classes=[{
-"base": "RefCounted",
-"class": &"SfxrGenerator",
-"language": &"GDScript",
-"path": "res://addons/godot_sfxr/SfxrGenerator.gd"
-}, {
-"base": "Object",
-"class": &"SfxrGlobals",
-"language": &"GDScript",
-"path": "res://addons/godot_sfxr/SfxrGlobals.gd"
-}, {
-"base": "Object",
-"class": &"SfxrStreamPlayerInterface",
-"language": &"GDScript",
-"path": "res://addons/godot_sfxr/SfxrStreamPlayerInterface.gd"
-}]
-_global_script_class_icons={
-"SfxrGenerator": "",
-"SfxrGlobals": "",
-"SfxrStreamPlayerInterface": ""
-}
-
 [application]
 
 config/name="GodotSfxr"
-config/features=PackedStringArray("4.0")
+config/features=PackedStringArray("4.1")
 config/icon="res://images/icon.png"
 
 [editor_plugins]
