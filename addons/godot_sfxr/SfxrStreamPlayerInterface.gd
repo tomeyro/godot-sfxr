@@ -83,14 +83,14 @@ static func object_get_property_list() -> Array:
     return props
 
 
-static func object_get(object: Node, property: String):
+static func object_get(object: Node, property: StringName):
     if property in PROPERTY_MAP:
         return object[PROPERTY_MAP[property]["name"]]
     elif property == "wave/type":
         return object.wave_type
 
 
-static func object_set(object: Node, property: String, value) -> bool:
+static func object_set(object: Node, property: StringName, value) -> bool:
     var auto_build = Engine.is_editor_hint() and object.is_inside_tree()
     if property in PROPERTY_MAP:
         object[PROPERTY_MAP[property]["name"]] = value
@@ -131,11 +131,11 @@ static func object_set_defaults(object: Node):
         object[PROPERTY_MAP[property]["name"]] = PROPERTY_MAP[property]["default"]
 
 
-static func object_property_can_revert(property: String):
+static func object_property_can_revert(property: StringName):
     return property in PROPERTY_MAP
 
 
-static func object_property_get_revert(property: String):
+static func object_property_get_revert(property: StringName):
     return PROPERTY_MAP[property]["default"]
 
 

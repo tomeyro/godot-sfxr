@@ -79,11 +79,11 @@ func _init():
     SfxrStreamPlayerInterface.object_set_defaults(self)
 
 
-func property_can_revert(property: String):
+func property_can_revert(property: StringName):
     return SfxrStreamPlayerInterface.object_property_can_revert(property)
 
 
-func property_get_revert(property: String):
+func property_get_revert(property: StringName):
     return SfxrStreamPlayerInterface.object_property_get_revert(property)
 
 
