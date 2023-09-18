@@ -21,7 +21,7 @@ func _enter_tree() -> void:
     # Add an audio player to the tree so we can play audio when creating sfx as resources.
     audio_player = AudioStreamPlayer.new()
     audio_player.add_to_group("SfxrInternalAudioPlayer")
-    get_tree().root.add_child(audio_player)
+    get_tree().root.add_child.call_deferred(audio_player)
 
 
 func _exit_tree() -> void:
