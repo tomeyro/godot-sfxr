@@ -1,6 +1,6 @@
 # GodotSfxr
 
-Godot plugin that adds the SfxrStreamPlayer node to generate sound effects inside the editor.
+Godot plugin that adds the SfxrStreamPlayer node and SfxrAudioStream Resource to generate sound effects inside the editor.
 
 ![SfxrStreamPlayer Node](images/icon_big.png)
 
@@ -26,7 +26,7 @@ Add the desired node: ``SfxrStreamPlayer``, ``SfxrStreamPlayer2D``, or ``SfxrStr
 
 Select a preset sound effect under the ``Generators`` group in the inspector.
 
-That will generate and save an ``AudioStreamSample`` resource with the audio data.
+That will generate and save an ``AudioStreamSample`` resource with the audio data (embedded on the node).
 
 ![Node options](https://user-images.githubusercontent.com/8657959/152902343-408276c1-dc8a-49d1-bdd6-e6de5fd4138d.png)
 
@@ -43,3 +43,11 @@ Everything else works as in the regular ``AudioStreamPlayer*`` nodes.
 For example, you can call the ``play`` function on the node, or connect to the ``finished`` signal.
 
 ![Code example](https://user-images.githubusercontent.com/8657959/152903349-cb60ba13-e2b3-456f-b741-61550a78dde4.png)
+
+Depending on your needs, you can also create a ``SfxrAudioStream`` Resource that will contain the audio data, and has all the same options as the nodes above.
+
+![Resource Creation](https://github.com/tomeyro/godot-sfxr/assets/8657959/3e80511d-0895-4dc6-a781-71c6e9374190)
+
+Then you can use that resource by setting it to the ``stream`` parameter of any ``AudioStreamPlayer``.
+
+![Node with resource](https://github.com/tomeyro/godot-sfxr/assets/8657959/5877916e-20e9-47ef-b805-fb10948faaa6)
