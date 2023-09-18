@@ -300,7 +300,7 @@ func get_raw_buffer() -> Array:
 
 func build_sample(stream_player):
     init_params(stream_player)
-    var sample: AudioStreamWAV = stream_player.stream
+    var sample: AudioStreamWAV = stream_player if stream_player is Resource else stream_player.stream
     if (not sample):
         stream_player.stream = AudioStreamWAV.new()
         sample = stream_player.stream

@@ -50,7 +50,7 @@ static func object_get_property_list() -> Array:
     presets.pop_front()
     var props = []
     props.append({
-        "name": "SfxrStreamPlayer",
+        "name": "SfxrAudioStream",
         "type": TYPE_NIL,
         "usage": PROPERTY_USAGE_CATEGORY | PROPERTY_USAGE_SCRIPT_VARIABLE,
     })
@@ -83,15 +83,15 @@ static func object_get_property_list() -> Array:
     return props
 
 
-static func object_get(object: Node, property: StringName):
+static func object_get(object: Object, property: StringName):
     if property in PROPERTY_MAP:
         return object[PROPERTY_MAP[property]["name"]]
     elif property == "wave/type":
         return object.wave_type
 
 
-static func object_set(object: Node, property: StringName, value) -> bool:
-    var auto_build = Engine.is_editor_hint() and object.is_inside_tree()
+static func object_set(object: Object, property: StringName, value) -> bool:
+    var auto_build = Engine.is_editor_hint() and (object is Resource or object.is_inside_tree())
     if property in PROPERTY_MAP:
         object[PROPERTY_MAP[property]["name"]] = value
         if auto_build:
@@ -125,7 +125,7 @@ static func object_set(object: Node, property: StringName, value) -> bool:
 ##################################
 
 
-static func object_set_defaults(object: Node):
+static func object_set_defaults(object: Object):
     object.wave_type = SfxrGlobals.WAVE_SHAPES.SAWTOOTH
     for property in PROPERTY_MAP:
         object[PROPERTY_MAP[property]["name"]] = PROPERTY_MAP[property]["default"]
@@ -161,7 +161,7 @@ static func rnd(rmax) -> float:
 ##################################
 
 
-static func _presets_pickup(object: Node):
+static func _presets_pickup(object: Object):
     object_set_defaults(object)
     object.wave_type = SfxrGlobals.WAVE_SHAPES.SAWTOOTH
     object.p_base_freq = 0.4 + frnd(0.5)
@@ -174,7 +174,7 @@ static func _presets_pickup(object: Node):
         object.p_arp_mod = 0.2 + frnd(0.4)
 
 
-static func _presets_laser(object: Node):
+static func _presets_laser(object: Object):
     object_set_defaults(object)
     object.wave_type = rnd(2)
     if object.wave_type == SfxrGlobals.WAVE_SHAPES.SINE and rnd(1):
@@ -208,7 +208,7 @@ static func _presets_laser(object: Node):
     object.p_hpf_freq = frnd(0.3)
 
 
-static func _presets_explosion(object: Node):
+static func _presets_explosion(object: Object):
     object_set_defaults(object)
     object.wave_type = SfxrGlobals.WAVE_SHAPES.NOISE
     if rnd(1):
@@ -236,7 +236,7 @@ static func _presets_explosion(object: Node):
         object.p_arp_mod = 0.8 - frnd(1.6)
 
 
-static func _presets_powerup(object: Node):
+static func _presets_powerup(object: Object):
     object_set_defaults(object)
     if rnd(1):
         object.wave_type = SfxrGlobals.WAVE_SHAPES.SAWTOOTH
@@ -257,7 +257,7 @@ static func _presets_powerup(object: Node):
     object.p_env_decay = 0.1 + frnd(0.4)
 
 
-static func _presets_hit(object: Node):
+static func _presets_hit(object: Object):
     object_set_defaults(object)
     object.wave_type = rnd(2)
     if object.wave_type == SfxrGlobals.WAVE_SHAPES.SINE:
@@ -275,7 +275,7 @@ static func _presets_hit(object: Node):
         object.p_hpf_freq = frnd(0.3)
 
 
-static func _presets_jump(object: Node):
+static func _presets_jump(object: Object):
     object_set_defaults(object)
     object.wave_type = SfxrGlobals.WAVE_SHAPES.SQUARE
     object.p_duty = frnd(0.6)
@@ -290,7 +290,7 @@ static func _presets_jump(object: Node):
         object.p_lpf_freq = 1 - frnd(0.6)
 
 
-static func _presets_blip(object: Node):
+static func _presets_blip(object: Object):
     object_set_defaults(object)
     object.wave_type = rnd(1)
     if object.wave_type == SfxrGlobals.WAVE_SHAPES.SQUARE:
@@ -304,7 +304,7 @@ static func _presets_blip(object: Node):
     object.p_hpf_freq = 0.1
 
 
-static func _presets_synth(object: Node):
+static func _presets_synth(object: Object):
     object_set_defaults(object)
     object.wave_type = rnd(1)
     object.p_base_freq = [0.2723171360931539, 0.19255692561524382, 0.13615778746815113][rnd(2)]
@@ -323,11 +323,11 @@ static func _presets_synth(object: Node):
     object.p_hpf_ramp = frnd(1) if rnd(3) == 3 else 0
 
 
-static func _presets_tone(object: Node):
+static func _presets_tone(object: Object):
     object_set_defaults(object)
 
 
-static func _presets_click(object: Node):
+static func _presets_click(object: Object):
     if rnd(1):
         _presets_hit(object)
     else:
@@ -343,7 +343,7 @@ static func _presets_click(object: Node):
     object.p_hpf_freq = 1 - frnd(0.1)
 
 
-static func _presets_random(object: Node):
+static func _presets_random(object: Object):
     object_set_defaults(object)
     object.wave_type = rnd(3)
     if rnd(1):
@@ -382,7 +382,7 @@ static func _presets_random(object: Node):
     object.p_arp_mod = frnd(2) - 1
 
 
-static func _presets_mutate(object: Node):
+static func _presets_mutate(object: Object):
     if rnd(1): object.p_base_freq += frnd(0.1) - 0.05
     if rnd(1): object.p_freq_ramp += frnd(0.1) - 0.05
     if rnd(1): object.p_freq_dramp += frnd(0.1) - 0.05
@@ -406,11 +406,11 @@ static func _presets_mutate(object: Node):
     if rnd(1): object.p_arp_mod += frnd(0.1) - 0.05
 
 
-static func random_preset(object: Node) -> bool:
+static func random_preset(object: Object) -> bool:
     return preset_values(object, (randi() % (len(SfxrGlobals.PRESETS) - 1)) + 1)
 
 
-static func preset_values(object: Node, preset_key: int) -> bool:
+static func preset_values(object: Object, preset_key: int) -> bool:
     if preset_key >= 0 and preset_key < len(SfxrGlobals.PRESETS):
         var preset = SfxrGlobals.PRESETS.keys()[preset_key].to_lower()
         match preset:
@@ -458,18 +458,18 @@ static func preset_values(object: Node, preset_key: int) -> bool:
 ##################################
 
 
-static func _schedule_build_sfx(object: Node, play_after_build: bool):
-    var timer: SceneTreeTimer = object.get_tree().create_timer(.5)
+static func _schedule_build_sfx(object: Object, play_after_build: bool):
+    var timer: SceneTreeTimer = Engine.get_main_loop().create_timer(.5)
     object.sfx_timer = timer
     timer.timeout.connect(func(): object._on_sfx_timer_timeout(timer, play_after_build))
 
 
-static func _on_sfx_timer_timeout(object: Node, timer: SceneTreeTimer, play_after_build: bool):
+static func _on_sfx_timer_timeout(object: Object, timer: SceneTreeTimer, play_after_build: bool):
     if timer == object.sfx_timer:
         build_sfx(object, play_after_build)
 
 
-static func build_sfx(object: Node, play_after_build: bool = false):
+static func build_sfx(object: Object, play_after_build: bool = false):
     var sfxg = SfxrGenerator.new()
     sfxg.build_sample(object)
     if play_after_build:
